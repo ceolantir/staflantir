@@ -2,18 +2,15 @@
 {% load ru_pluralize %}
 {% block content %}
     <main class="container mt-3">
-        <section>
-            <h1 class="h1 text-center mt-5 mb-4">
-                Поиск специалиста
-            </h1>
+        <section class="mt-3 pt-3">
             <div class="row">
-                <div class="col-md-7 col-lg-5 col-xl-4 col-sm-8 mx-auto">
-                    <form class="form-inline sm-form mr-auto mb-4" enctype="multipart/form-data" method="GET">
-                        <div class="form-group">
+                <div class="col-12 col-md-8 col-lg-6 offset-lg-3 offset-md-2">
+                    <form class="form-inline mb-3" enctype="multipart/form-data" method="GET" action="{% url 'search' %}">
+                        <div class="form-group col-12 col-md-10 pl-0">
                             {{ form.data }}
                         </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary  my-0" type="submit">
+                        <div class="form-group col-4 col-md-2 pl-0">
+                            <button class="btn btn-primary w-100" type="submit">
                                 Найти
                             </button>
                         </div>
