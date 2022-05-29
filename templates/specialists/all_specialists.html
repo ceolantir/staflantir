@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% load ru_pluralize %}
+{% block content %}
+    <main class="container mt-3">
+        <section>
+            <h1 class="h1 text-center mt-5 mb-4">
+                Поиск специалиста
+            </h1>
+            <div class="row">
+                <div class="col-md-7 col-lg-5 col-xl-4 col-sm-8 mx-auto">
+                    <form class="form-inline sm-form mr-auto mb-4" enctype="multipart/form-data" method="GET">
+                        <div class="form-group">
+                            {{ form.data }}
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary  my-0" type="submit">
+                                Найти
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <section class="mt-5 pt-3">
+            <h2 class="h2 font-weight-normal text-center mb-5">Доступные специалисты</h2>
+            <div class="row mb-0">
+                {% for specialist in specialists %}
+                    <div class="col-4 col-md-4">
+                        <div class="card pt-4 text-center mb-4">
+                            <div class="card-body">
+                                <p class="card-text mb-2">
+                                    <a href="{% url 'detail_specialist' pk=specialist.pk %}">
+                                        <img class="mx-auto d-block" src="{{ specialist.image.url }}" width="80" height="80" alt="">
+                                        {{ specialist.last_name }} {{ specialist.first_name }}
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+{% endblock %}
