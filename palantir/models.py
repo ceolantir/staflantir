@@ -43,3 +43,9 @@ class Specialist(models.Model):
 
     def get_absolute_url(self):
         return reverse('specialists', kwargs={'pk': self.pk})
+
+    def full_name(self):
+        return f'{self.last_name} {self.first_name}'
+
+    def full_name_2(self):
+        return f'{self.first_name} {self.last_name}'
