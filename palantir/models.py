@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
@@ -33,6 +34,7 @@ class Specialist(models.Model):
         default=MEDIA_SPECIALISTS_IMAGE_DIR_default,
         verbose_name='Лого',
     )
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец', default=User)
 
     class Meta:
         verbose_name = 'Специалист'
