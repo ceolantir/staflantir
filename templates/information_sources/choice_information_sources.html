@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load ru_pluralize %}
+{% block content %}
+    <main class="container mt-3">
+        <section class="mt-3 pt-3">
+            <h2 class="h2 font-weight-normal text-center mb-5">
+                Выберите информационные источники
+            </h2>
+            <form class="form-signin" enctype="multipart/form-data" method="POST">
+                <div class="row mb-0">
+                    {% csrf_token %}
+                    {% for information_source in information_sources %}
+                        <div class="col-6 col-md-6 col-lg-3">
+                            <div class="pt-1 text-center mb-4">
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <a href="{{ information_source.get_absolute_url }}">
+                                            <img class="mx-auto d-block" src="{{ information_source.image.url }}" width="80" height="80" alt="">
+                                        </a>
+                                        </br> {{ information_source.title }}
+                                        {% for information_source_selection_form in information_sources_selection_form %}
+                                            {% if information_source.title == information_source_selection_form.label %}
+                                                {{ information_source_selection_form }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% csrf_token %}
+                <button class="btn btn-lg btn-block btn-primary" type="submit">
+                    Перейти к заполнению исходных данных
+                </button>
+            </form>
+        </section>
+    </main>
+{% endblock %}
