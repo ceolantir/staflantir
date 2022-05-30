@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404, render
 from django.db.models import Value as V, Q
 from django.db.models.functions import Concat
 from django.http import HttpResponseNotFound, HttpResponse
