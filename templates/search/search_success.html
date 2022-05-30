@@ -1,0 +1,26 @@
+{% extends 'search/search.html' %}
+{% load ru_pluralize %}
+{% block content_2 %}
+    <main class="mt-3 pt-3">
+            <h2 class="h2 font-weight-normal text-center mb-5">
+                Найденные специалисты
+            </h2>
+            <div class="row mb-0">
+                {% for specialist in specialists %}
+                    <div class="col-4 col-md-3">
+                        <div class="card pt-4 text-center mb-4">
+                            <div class="card-body">
+                                <p class="card-text mb-2">
+                                    <a href="{% url 'detail_specialist' pk=specialist.pk %}">
+                                        <img class="mx-auto d-block" src="{{ specialist.image.url }}" width="160" height="160" alt="">
+                                        </br> {{ specialist.last_name }}
+                                        </br> {{ specialist.first_name }}
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+    </main>
+{% endblock %}
