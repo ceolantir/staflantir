@@ -8,14 +8,15 @@
                     {% csrf_token %}
                     <div class="text-center mt-5 b-1">
                         <h1 class="h3 mb-3 font-weight-normal">
-                            STAFLANTIR
+                            <em>
+                                STAFLANTIR
+                            </em>
                         </h1>
                         <p class="h5 font-weight-light">
                             Создайте аккаунт
                         </p>
                     </div>
                     {{ form|crispy }}
-                    <div class="checkbox mb-3"></div>
                     <button class="btn btn-lg btn-block btn-primary" type="submit">
                         Зарегистрироваться
                     </button>
