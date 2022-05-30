@@ -1,12 +1,12 @@
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic.base import TemplateView, View
-from .models import InformationSource, Specialist
-from .forms import InformationSourceForm, SpecialistForm, SearchForm
+from django.shortcuts import get_object_or_404, render
+from django.db.models import Value as V, Q
+from django.db.models.functions import Concat
 from django.http import HttpResponseNotFound, HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.views.generic.base import TemplateView, View
+
+from .forms import SearchForm
+from .models import InformationSource, Specialist
 
 
 class MainView(TemplateView):
@@ -49,18 +49,25 @@ class DetailSpecialistView(TemplateView):
 
 class SearchView(View):
     def get(self, request):
-        data = request.GET.get('data', False)
-        if data:
-            specialists = Specialist.objects \
-                .filter(Q(first_name__icontains=data) | Q(last_name__icontains=data)) \
-                .order_by('last_name')
+        data = request.GET.get('data', False).strip().lower().capitalize()
+        specialists = Specialist.objects.annotate(
+            full_name=Concat('last_name', V(' '), 'first_name')
+        ).filter(
+            Q(full_name__icontains=data) |
+            Q(first_name__icontains=data) |
+            Q(last_name__icontains=data)
+        )
+        if data and specialists:
+            context = {
+                'specialists': specialists,
+                'form': SearchForm(request.GET),
+            }
+            return render(request, 'search/search_success.html', context=context)
         else:
-            specialists = Specialist.objects.all()
-        context = {
-            'specialists': specialists,
-            'form': SearchForm(request.GET),
-        }
-        return render(request, 'main/search.html', context=context)
+            context = {
+                'form': SearchForm(request.GET),
+            }
+            return render(request, 'search/search_failure.html', context=context)
 
 
 def page_not_found(request, exception):
