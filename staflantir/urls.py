@@ -8,6 +8,7 @@ from palantir.views import page_not_found, server_error
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('palantir.urls')),
+    path('', include('users.urls')),
 ]
 
 handler404 = page_not_found
