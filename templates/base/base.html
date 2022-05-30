@@ -14,14 +14,23 @@
 <body>
 <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand mr-4" href="{% url 'home' %}">STAFLANTIR</a>
+        <a class="navbar-brand mr-4" href="{% url 'home' %}">
+            STAFLANTIR
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
             <ul class="navbar-nav col-10">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'specialists' %}">Специалисты</a>
+                    <a class="nav-link" href="{% url 'specialists' %}">
+                        Специалисты
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'specialists' %}">
+                        OSINT
+                    </a>
                 </li>
             </ul>
             <ul class="navbar-nav col-2 justify-content-end">
@@ -29,19 +38,25 @@
                     <div class="collapse navbar-collapse justify-content-end" id="navbarNavDarkDropdown">
                         <ul class="navbar-nav">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Имя Фамилия
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink"
+                                   role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    {% if user.first_name or user.last_name %}
+                                        {{ user.first_name }} {{ user.last_name }}
+                                    {% else %}
+                                        Неизвестный пользователь
+                                    {% endif %}
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-dark"
-                                    aria-labelledby="navbarDarkDropdownMenuLink">
-                                    <li><a>Выйти</a></li>
+                                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
                 {% else %}
                     <li class="nav-item active">
-                        <a>Вход</a>
+                        <a href="{% url 'login' %}" class="nav-link font-weight-bold">Вход</a>
                     </li>
                 {% endif %}
             </ul>
