@@ -1,10 +1,13 @@
+import random
+import string
+
 from django.db.models import Value as V, Q
 from django.db.models.functions import Concat
 from django.http import HttpResponseNotFound, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic.base import TemplateView, View
 
-from .forms import SearchForm
+from .forms import SearchForm, InformationSourcesSelectionForm
 from .models import InformationSource, Specialist
 
 
@@ -57,16 +60,69 @@ class SearchView(View):
             Q(last_name__icontains=data)
         )
         if data and specialists:
-            context = {
-                'specialists': specialists,
-                'form': SearchForm(request.GET),
-            }
-            return render(request, 'search/search_success.html', context=context)
+            return render(
+                request,
+                'search/search_success.html',
+                context={
+                    'specialists': specialists,
+                    'form': SearchForm(request.GET),
+                },
+            )
         else:
-            context = {
-                'form': SearchForm(request.GET),
-            }
-            return render(request, 'search/search_failure.html', context=context)
+            return render(
+                request,
+                'search/search_failure.html',
+                context={'form': SearchForm(request.GET)},
+            )
+
+
+class ChoiceInformationSourcesView(View):
+    def get(self, request):
+        return render(
+            request,
+            'information_sources/choice_information_sources.html',
+            context={
+                'information_sources': InformationSource.objects.all().order_by('title'),
+                'information_sources_selection_form': InformationSourcesSelectionForm,
+            },
+        )
+
+    def post(self, request, *args, **kwargs):
+        form = InformationSourcesSelectionForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            information_sources = []
+            for source in data:
+                if not data[source]:
+                    continue
+                information_sources.append(source)
+                if information_sources is []:
+                    return render(
+                        request,
+                        'information_sources/choice_information_sources.html',
+                        context={
+                            'information_sources': InformationSource.objects.all().order_by('title'),
+                            'information_sources_selection_form': form,
+                        },
+                    )
+            return redirect('application', information_sources=','.join(information_sources))
+        return render(
+            request,
+            'information_sources/choice_information_sources.html',
+            context={
+                'information_sources': InformationSource.objects.all().order_by('title'),
+                'information_sources_selection_form': form,
+            },
+        )
+
+
+class ApplicationView(TemplateView):
+    template_name = 'information_sources/application.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationView, self).get_context_data(**kwargs)
+        context['information_sources'] = kwargs['information_sources'].split(',')
+        return context
 
 
 def page_not_found(request, exception):
