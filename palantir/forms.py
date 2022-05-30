@@ -40,3 +40,13 @@ class SearchForm(forms.Form):
 
     class Meta:
         fields = ('data',)
+
+
+class InformationSourcesSelectionForm(forms.Form):
+    vk = forms.BooleanField(required=False, label='VK')
+    instagram = forms.BooleanField(required=False, label='Instagram')
+    twitter = forms.BooleanField(required=False, label='Twitter')
+    pinterest = forms.BooleanField(required=False, label='Pinterest')
+
+    class Meta:
+        fields = ('vk', 'instagram', 'twitter',)
