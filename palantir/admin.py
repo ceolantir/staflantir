@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import InformationSource, Specialist
+from .models import InformationSource, Specialist, VKDataSpecialist
 
 
 @admin.register(InformationSource)
@@ -19,6 +19,17 @@ class SpecialistAdmin(admin.ModelAdmin):
         'id',
         'first_name',
         'last_name',
-        'description',
     )
     list_display_links = ('first_name', 'last_name',)
+
+
+@admin.register(VKDataSpecialist)
+class VKDataSpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'specialist',
+        'first_name',
+        'last_name',
+    )
+    list_display_links = ('specialist', 'first_name', 'last_name',)
+    list_filter = ('specialist', 'specialist__owner',)
