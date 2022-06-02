@@ -42,7 +42,7 @@ class SearchForm(forms.Form):
 
 class InformationSourcesSelectionForm(forms.Form):
     vk = forms.BooleanField(required=False, label='VK')
-    Phone_number_information = forms.BooleanField(required=False, label='Phone number information')
+    phone_number_information = forms.BooleanField(required=False, label='Phone number information')
     # instagram = forms.BooleanField(required=False, label='Instagram')
     # twitter = forms.BooleanField(required=False, label='Twitter')
     # pinterest = forms.BooleanField(required=False, label='Pinterest')
@@ -54,17 +54,13 @@ class InformationSourcesSelectionForm(forms.Form):
 class InitialDataForm(forms.Form):
     first_name = forms.CharField(max_length=30, label='Имя')
     last_name = forms.CharField(max_length=30, label='Фамилия')
-    username = forms.CharField(max_length=100, required=False, label='Username')
-    user_id_vk = forms.CharField(max_length=100, label='ID в VK (узнать: regvk.com/id)')
-    phone = forms.CharField(max_length=100, required=False, label='Номер телефона')
+    # username = forms.CharField(max_length=100, required=False, label='Username')
 
     class Meta:
-        fields = ('first_name', 'last_name', 'username', 'additional_username', 'user_id_vk', 'phone',)
+        fields = ('first_name', 'last_name',)
 
 
 class InitialDataVKForm(forms.Form):
-    first_name = forms.CharField(max_length=30, label='Имя')
-    last_name = forms.CharField(max_length=30, label='Фамилия')
     user_id_vk = forms.CharField(max_length=100, label='ID в VK')
     visualization_friends = forms.BooleanField(
         required=False,
@@ -75,6 +71,13 @@ class InitialDataVKForm(forms.Form):
 
     class Meta:
         fields = ('first_name', 'last_name', 'user_id_vk',)
+
+
+class InitialDataPhoneNumberInformationForm(forms.Form):
+    phone = forms.CharField(max_length=100, required=False, label='Номер телефона')
+
+    class Meta:
+        fields = ('phone',)
 
 
 class VKDataSpecialistForm(ModelForm):
