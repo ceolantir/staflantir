@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
@@ -27,7 +28,10 @@ class MyLoginView(LoginView):
 
 
 @method_decorator(login_required, name='get')
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = '/'
+
     def get(self, request):
         return render(request, 'users/profile.html', context={'form': ProfileForm(instance=request.user)})
 
@@ -44,7 +48,10 @@ class ProfileView(View):
 
 
 @method_decorator(login_required, name='get')
-class ChangePasswordView(View):
+class ChangePasswordView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = '/'
+
     def get(self, request):
         return render(request, 'users/change_password.html', context={'form': ChangePasswordForm})
 
