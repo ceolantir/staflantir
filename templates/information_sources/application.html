@@ -1,0 +1,22 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_filters %}
+{% block content %}
+    <main class="container">
+        <div class="row">
+            <div class="col-8 col-lg-4 offset-2 offset-lg-4">
+                <form class="form-signin pt-5" enctype="multipart/form-data" method="POST">
+                    {% csrf_token %}
+                    <div class="text-center mt-5 b-1">
+                        <h1 class="h3 mb-3 font-weight-normal">
+                            Введите исходные данные
+                        </h1>
+                    </div>
+                    {{ form|crispy }}
+                    <button class="btn btn-lg btn-block btn-primary" type="submit">
+                        Отправить заявку
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}
