@@ -1,3 +1,5 @@
+from typing import NamedTuple
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Value as V, Q
 from django.db.models.functions import Concat
@@ -6,8 +8,21 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic.base import TemplateView, View
 
 from . import constants
+from .discovery.vk.exceptions import (
+    BadUserID,
+    ProfileIsPrivate,
+    UserDeletedOrBanned,
+    UnidentifiedError,
+)
 from .discovery.vk.vk import VK
-from .forms import SearchForm, InformationSourcesSelectionForm, InitialDataVKForm, SpecialistForm
+from .forms import (
+    SearchForm,
+    InformationSourcesSelectionForm,
+    InitialDataForm,
+    InitialDataVKForm,
+    SpecialistForm,
+    InitialDataPhoneNumberInformationForm,
+)
 from .models import InformationSource, Specialist, VKDataSpecialist
 
 
@@ -195,6 +210,11 @@ class ChoiceInformationSourcesView(LoginRequiredMixin, View):
         )
 
 
+class NeedToProcessInformationSources(NamedTuple):
+    form_vk: bool
+    form_phone_number_information: bool
+
+
 class ApplicationView(LoginRequiredMixin, TemplateView):
     login_url = '/login/'
     redirect_field_name = '/'
@@ -202,12 +222,18 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         information_sources = kwargs['information_sources'].split(',')
-
-        if 'vk' in information_sources:
-            form = InitialDataVKForm
-
         context = super(ApplicationView, self).get_context_data(**kwargs)
-        context['form'] = form
+        context['need_to_process'] = NeedToProcessInformationSources(
+            form_vk=False,
+            form_phone_number_information=False,
+        )
+        context['form'] = InitialDataForm
+        if 'vk' in information_sources:
+            context['form_vk'] = InitialDataVKForm
+            context['need_to_process'] = context['need_to_process']._replace(form_vk=True)
+        if 'phone_number_information' in information_sources:
+            context['form_phone_number_information'] = InitialDataPhoneNumberInformationForm
+            context['need_to_process'] = context['need_to_process']._replace(form_phone_number_information=True)
 
         return context
 
@@ -219,10 +245,18 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
             last_name=self.request.POST.get('last_name', 'Нет фамилии'),
             owner=self.request.user,
         )
-        specialist_status = 'Специалист добавлен' if specialist_created else 'Данные специалиста обновлены'
 
         vk_id = self.request.POST.get('user_id_vk', 'Нет фамилии')
-        vk_info = VK(vk_id).get_vk_info(self.request.POST.get('visualization_friends', False))
+        try:
+            vk_info = VK(vk_id).get_vk_info(self.request.POST.get('visualization_friends', False))
+        except BadUserID:
+            pass
+        except ProfileIsPrivate:
+            pass
+        except UserDeletedOrBanned:
+            pass
+        except UnidentifiedError:
+            pass
         try:
             vk_data_specialist = VKDataSpecialist.objects.get(specialist=specialist, vk_id=vk_info['vk_id'])
 
