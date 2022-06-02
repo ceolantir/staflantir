@@ -28,13 +28,13 @@ class InformationSource(models.Model):
 class Specialist(models.Model):
     first_name = models.CharField(max_length=30, verbose_name='Имя')
     last_name = models.CharField(max_length=30, verbose_name='Фамилия')
-    description = models.TextField(max_length=2000, verbose_name='Информация')
+    description = models.TextField(max_length=2000, null=True, blank=False, verbose_name='Описание специалиста')
     image = models.ImageField(
         upload_to=MEDIA_SPECIALISTS_IMAGE_DIR,
         default=MEDIA_SPECIALISTS_IMAGE_DIR_default,
         verbose_name='Лого',
     )
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец', default=User)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=User, verbose_name='Владелец')
 
     class Meta:
         verbose_name = 'Специалист'
@@ -51,3 +51,50 @@ class Specialist(models.Model):
 
     def full_name_2(self):
         return f'{self.first_name} {self.last_name}'
+
+
+class VKDataSpecialist(models.Model):
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
+    first_name = models.CharField(max_length=100, null=True, blank=False, verbose_name='Имя')
+    last_name = models.CharField(max_length=100, null=True, blank=False, verbose_name='Фамилия')
+    bdate = models.CharField(max_length=100, null=True, blank=False, verbose_name='Дата рождения')
+    number_of_friends = models.CharField(max_length=100, null=True, blank=False, verbose_name='Количество друзей')
+    home_town = models.CharField(max_length=100, null=True, blank=False, verbose_name='Родной город')
+    city = models.CharField(max_length=100, null=True, blank=False, verbose_name='Город проживания')
+    country = models.CharField(max_length=100, null=True, blank=False, verbose_name='Страна проживания')
+    relation = models.CharField(max_length=100, null=True, blank=False, verbose_name='Семейное положение')
+    screen_name = models.CharField(max_length=100, null=True, blank=False, verbose_name='Короткое имя')
+    vk_id = models.CharField(max_length=100, verbose_name='VK id')
+    domain = models.CharField(max_length=100, null=True, blank=False, verbose_name='Короткий адрес страницы VK')
+    skype = models.CharField(max_length=100, null=True, blank=False, verbose_name='Данные для связи в skype')
+    schools = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Список школ')
+    universities = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Список вузов')
+    career = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Место работы')
+    military = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Место военной службы')
+    interests = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Интересы')
+    books = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Любимые книги')
+    tv = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Любимые телешоу')
+    quotes = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Любимые цитаты')
+    about = models.CharField(max_length=1000, null=True, blank=False, verbose_name='О себе')
+    games = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Любимые игры')
+    movies = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Любимые фильмы')
+    activities = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Деятельность')
+    music = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Любимая музыка')
+    site = models.CharField(max_length=1000, null=True, blank=False, verbose_name='Адрес сайта')
+    political = models.CharField(max_length=100, null=True, blank=False, verbose_name='Политические предпочтения')
+    university_name = models.CharField(max_length=100, null=True, blank=False, verbose_name='Наименование вуза')
+    faculty_name = models.CharField(max_length=100, null=True, blank=False, verbose_name='Наименование факультета в вузе')
+    graduation = models.CharField(max_length=100, null=True, blank=False, verbose_name='Год окончания обучения в вузе')
+    education_form = models.CharField(max_length=100, null=True, blank=False, verbose_name='Форма обучения в вузе')
+    education_status = models.CharField(max_length=100, null=True, blank=False, verbose_name='Статус в вузе')
+    is_closed = models.CharField(max_length=100, null=True, blank=False, verbose_name='Закрыт ли аккаунт')
+    photo_200_orig = models.CharField(max_length=1000, null=True, blank=False, verbose_name='URL фотографии, имеющей ширину 200 пикселей')
+    photo_400_orig = models.CharField(max_length=1000, null=True, blank=False, verbose_name='URL фотографии, имеющей ширину 400 пикселей')
+    visualization_of_friends_picture_name = models.CharField(max_length=100, null=True, blank=False, verbose_name='Визуализация друзей')
+
+    class Meta:
+        verbose_name = 'Данные специалиста из VK'
+        verbose_name_plural = 'Данные специалиста из VK'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
