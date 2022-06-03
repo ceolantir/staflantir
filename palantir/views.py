@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic.base import TemplateView, View
 
 from . import constants
+from .discovery.phone_number.search_phone_info import search_phone
 from .discovery.vk.vk import VK
 from .forms import (
     SearchForm,
@@ -17,7 +18,12 @@ from .forms import (
     SpecialistForm,
     InitialDataPhoneNumberInformationForm,
 )
-from .models import InformationSource, Specialist, VKDataSpecialist
+from .models import (
+    InformationSource,
+    Specialist,
+    VKDataSpecialist,
+    PhoneNumberInformationSpecialist,
+)
 
 
 class MainView(TemplateView):
@@ -66,21 +72,33 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
             pk=kwargs['pk'],
             owner=self.request.user,
         )
-        context['specialist_data_vk'] = get_object_or_404(
-            VKDataSpecialist,
-            specialist=context['specialist'],
-        )
-        context['specialist_data_vk_fields'] = {}
-        for field in context['specialist_data_vk']._meta.get_fields():
-            key = str(field).split('.')[-1]
-            value = context['specialist_data_vk'][key]
 
-            if not value or key in constants.attribute_exceptions_vk_data_specialist:
-                continue
-            if key == 'is_closed' and value == 'Закрыт':
-                continue
+        specialist_data_vk = VKDataSpecialist.objects.all().filter(Q(specialist=context['specialist']))
+        if specialist_data_vk:
+            context['specialist_data_vk'] = specialist_data_vk[0]
+            context['specialist_data_vk_fields'] = {}
 
-            context['specialist_data_vk_fields'][field.verbose_name] = value
+            for field in context['specialist_data_vk']._meta.get_fields():
+                key = str(field).split('.')[-1]
+                value = context['specialist_data_vk'][key]
+
+                if not value or key in constants.attribute_exceptions_vk_data_specialist:
+                    continue
+                if key == 'is_closed' and value == 'Закрыт':
+                    continue
+
+                context['specialist_data_vk_fields'][field.verbose_name] = value
+
+        specialist_data_phone = PhoneNumberInformationSpecialist.objects.all().filter(Q(specialist=context['specialist']))
+        if specialist_data_phone:
+            context['specialist_data_phone'] = specialist_data_vk[0]
+            context['specialist_data_phone_fields'] = {}
+
+            for field in context['specialist_data_phone']._meta.get_fields():
+                key = str(field).split('.')[-1]
+                value = context['specialist_data_phone'][key]
+
+                context['specialist_data_vk_fields'][field.verbose_name] = value
 
         return context
 
@@ -98,10 +116,6 @@ class DetailSpecialistEditView(LoginRequiredMixin, TemplateView):
             owner=self.request.user,
         )
         context['specialist_description'] = SpecialistForm(instance=context['specialist'])
-        context['specialist_data_vk'] = get_object_or_404(
-            VKDataSpecialist,
-            specialist=context['specialist'],
-        )
 
         return context
 
@@ -259,6 +273,10 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
                     setattr(vk_data_specialist, key, value)
 
                 vk_data_specialist.save()
+        # if 'phone_number_information' in information_sources:
+        #     phone = self.request.POST.get('phone')
+        #
+        #     phone_info = search_phone(phone)
 
         return redirect(f'/specialists/{specialist.pk}')
 
@@ -280,7 +298,10 @@ class ErrorView(LoginRequiredMixin, TemplateView):
         elif type_of_error == 'UserDeletedOrBanned':
             context['error_text'] = 'Профиль пользователя в VK удален или забанен, в ' \
                                     'связи с чем доступ к некоторому функционалу ограничен.'
-        elif type_of_error == 'UnidentifiedError':
+        elif type_of_error == 'PhoneError':
+            context['error_text'] = 'Информация по данному телефону не получена. ' \
+                                    'Проверьте введенные данные или повторите попытку позже.'
+        else:
             context['error_text'] = 'Неопознанная ошибка. Проверьте введенные данные.'
 
         return context
