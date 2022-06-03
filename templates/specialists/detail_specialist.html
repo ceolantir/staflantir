@@ -5,12 +5,7 @@
 {% block content %}
     <main class="container mt-3 pb-5">
         <div class="row mt-5">
-            <div class="col-12 col-lg-2">
-                <div class="pl-3 mb-5">
-                    <p><a href="javascript:history.go(-1)">Назад</a></p>
-                </div>
-            </div>
-
+            <div class="col-12 col-lg-2"></div>
             <div class="col-12 col-lg-8">
                 <section class="px-3">
                     <div class="text-center">
@@ -21,41 +16,31 @@
                             {{ specialist.full_name }}
                         </strong>
                     </h1>
-                    {% if not edit %}
-                        <div class="card px-3">
-                            <div class="card-body pb-1">
-                                <h4>
-                                    Описание специалиста
-                                </h4>
+                    <div class="card px-3">
+                        <div class="card-body pb-1">
+                            <h4>
+                                Описание специалиста
+                            </h4>
+                            {% if specialist.description %}
                                 <p>
                                     {{ specialist.description|linebreaksbr }}
                                 </p>
-                            </div>
-                            <div class="card-body pt-1">
-                                <a href="{% url 'detail_specialist_edit' pk=specialist.pk %}">
-                                    <button class="btn btn-block btn-primary">
-                                        Редактировать данные специалиста
-                                    </button>
-                                </a>
-                            </div>
+                            {% else %}
+                                <p>
+                                    <i>
+                                        Добавить описание можно при редактировании данных специалиста
+                                    </i>
+                                </p>
+                            {% endif %}
                         </div>
-                    {% else %}
-                        <form class="form-signin" enctype="multipart/form-data" method="POST">
-                            {% csrf_token %}
-                            <div class="card px-3 my-3">
-                                <div class="card-body pb-1">
-                                    <p>
-                                        {{ specialist_description|crispy }}
-                                    </p>
-                                </div>
-                                <div class="card-body pt-1">
-                                    <button class="btn btn-block btn-primary" type="submit">
-                                        Сохранить изменения
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    {% endif %}
+                        <div class="card-body pt-1">
+                            <a href="{% url 'detail_specialist_edit' pk=specialist.pk %}">
+                                <button class="btn btn-block btn-primary">
+                                    Редактировать данные специалиста
+                                </button>
+                            </a>
+                        </div>
+                    </div>
                     <div class="card px-3 my-3">
                         <div class="card-body">
                             <h4>
