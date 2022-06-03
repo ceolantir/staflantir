@@ -1,6 +1,15 @@
 from django.shortcuts import redirect
 
 
+error_tuple = (
+    'BadUserID',
+    'ProfileIsPrivate',
+    'UserDeletedOrBanned',
+    'UnidentifiedError',
+    'PhoneError',
+)
+
+
 class Process:
     def __init__(self, get_response):
         self._get_response = get_response
@@ -9,11 +18,5 @@ class Process:
         return self._get_response(request)
 
     def process_exception(self, request, exception):
-        if str(exception) == 'BadUserID':
-            return redirect(f'/error/BadUserID')
-        elif str(exception) == 'ProfileIsPrivate':
-            return redirect(f'/error/ProfileIsPrivate')
-        elif str(exception) == 'UserDeletedOrBanned':
-            return redirect(f'/error/UserDeletedOrBanned')
-        elif str(exception) == 'UnidentifiedError':
-            return redirect(f'/error/UnidentifiedError')
+        if str(exception) in error_tuple:
+            return redirect(f'/error/{str(exception)}')

@@ -207,7 +207,7 @@ class VK:
 
 
 # if __name__ == "__main__":
-#     user_id = '144816537'
+#     user_id = ''
 #     vk_frineds_visualization = VK(user_id)
 #
 #     info = vk_frineds_visualization.get_vk_info()
