@@ -8,12 +8,6 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic.base import TemplateView, View
 
 from . import constants
-from .discovery.vk.exceptions import (
-    BadUserID,
-    ProfileIsPrivate,
-    UserDeletedOrBanned,
-    UnidentifiedError,
-)
 from .discovery.vk.vk import VK
 from .forms import (
     SearchForm,
@@ -72,11 +66,8 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
             pk=kwargs['pk'],
             owner=self.request.user,
         )
-        context['edit'] = False
         context['specialist_data_vk'] = get_object_or_404(
             VKDataSpecialist,
-            first_name=context['specialist'].first_name,
-            last_name=context['specialist'].last_name,
             specialist=context['specialist'],
         )
         context['specialist_data_vk_fields'] = {}
@@ -97,7 +88,7 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 class DetailSpecialistEditView(LoginRequiredMixin, TemplateView):
     login_url = '/login/'
     redirect_field_name = '/'
-    template_name = 'specialists/detail_specialist.html'
+    template_name = 'specialists/edit_detail_specialist.html'
 
     def get_context_data(self, **kwargs):
         context = super(DetailSpecialistEditView, self).get_context_data(**kwargs)
@@ -106,12 +97,9 @@ class DetailSpecialistEditView(LoginRequiredMixin, TemplateView):
             pk=kwargs['pk'],
             owner=self.request.user,
         )
-        context['edit'] = True
         context['specialist_description'] = SpecialistForm(instance=context['specialist'])
         context['specialist_data_vk'] = get_object_or_404(
             VKDataSpecialist,
-            first_name=context['specialist'].first_name,
-            last_name=context['specialist'].last_name,
             specialist=context['specialist'],
         )
 
@@ -121,10 +109,13 @@ class DetailSpecialistEditView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
 
         specialist, specialist_created = Specialist.objects.update_or_create(
-            first_name=self.request.POST.get('first_name'),
-            last_name=self.request.POST.get('last_name'),
+            pk=int(self.request.path.split('/')[2]),
             owner=self.request.user,
-            defaults={'description': self.request.POST.get('description')},
+            defaults={
+                'first_name': self.request.POST.get('first_name'),
+                'last_name': self.request.POST.get('last_name'),
+                'description': self.request.POST.get('description'),
+            },
         )
 
         return redirect(f'/specialists/{specialist.pk}')
@@ -241,41 +232,58 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
 
         specialist, specialist_created = Specialist.objects.update_or_create(
-            first_name=self.request.POST.get('first_name', 'Нет имени'),
-            last_name=self.request.POST.get('last_name', 'Нет фамилии'),
+            first_name=self.request.POST.get('first_name'),
+            last_name=self.request.POST.get('last_name'),
             owner=self.request.user,
         )
+        information_sources = self.request.path.split('/')[2].split(',')
 
-        vk_id = self.request.POST.get('user_id_vk', 'Нет фамилии')
-        try:
+        if 'vk' in information_sources:
+            vk_id = self.request.POST.get('user_id_vk')
             vk_info = VK(vk_id).get_vk_info(self.request.POST.get('visualization_friends', False))
-        except BadUserID:
-            pass
-        except ProfileIsPrivate:
-            pass
-        except UserDeletedOrBanned:
-            pass
-        except UnidentifiedError:
-            pass
-        try:
-            vk_data_specialist = VKDataSpecialist.objects.get(specialist=specialist, vk_id=vk_info['vk_id'])
 
-            for key, value in vk_info.items():
-                if key == 'vk_id':
-                    continue
-                setattr(vk_data_specialist, key, value)
+            try:
+                vk_data_specialist = VKDataSpecialist.objects.get(specialist=specialist, vk_id=vk_info['vk_id'])
 
-            vk_data_specialist.save()
-        except VKDataSpecialist.DoesNotExist:
-            vk_data_specialist = VKDataSpecialist()
-            vk_data_specialist.specialist = specialist
+                for key, value in vk_info.items():
+                    if key == 'vk_id':
+                        continue
+                    setattr(vk_data_specialist, key, value)
 
-            for key, value in vk_info.items():
-                setattr(vk_data_specialist, key, value)
+                vk_data_specialist.save()
+            except VKDataSpecialist.DoesNotExist:
+                vk_data_specialist = VKDataSpecialist()
+                vk_data_specialist.specialist = specialist
 
-            vk_data_specialist.save()
+                for key, value in vk_info.items():
+                    setattr(vk_data_specialist, key, value)
+
+                vk_data_specialist.save()
 
         return redirect(f'/specialists/{specialist.pk}')
+
+
+class ErrorView(LoginRequiredMixin, TemplateView):
+    login_url = '/login/'
+    redirect_field_name = '/'
+    template_name = 'information_sources/error.html'
+
+    def get_context_data(self, **kwargs):
+        type_of_error = kwargs['type_of_error']
+        context = super(ErrorView, self).get_context_data(**kwargs)
+
+        if type_of_error == 'BadUserID':
+            context['error_text'] = 'Пользователь с таким ID в VK не найден.'
+        elif type_of_error == 'ProfileIsPrivate':
+            context['error_text'] = 'Профиль пользователя в VK закрыт, в связи с ' \
+                                    'чем доступ к некоторому функционалу ограничен.'
+        elif type_of_error == 'UserDeletedOrBanned':
+            context['error_text'] = 'Профиль пользователя в VK удален или забанен, в ' \
+                                    'связи с чем доступ к некоторому функционалу ограничен.'
+        elif type_of_error == 'UnidentifiedError':
+            context['error_text'] = 'Неопознанная ошибка. Проверьте введенные данные.'
+
+        return context
 
 
 def page_not_found(request, exception):
