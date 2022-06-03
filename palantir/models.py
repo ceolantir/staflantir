@@ -94,8 +94,23 @@ class VKDataSpecialist(models.Model):
     visualization_of_friends_picture_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='Визуализация друзей')
 
     class Meta:
-        verbose_name = 'Данные специалиста из VK'
-        verbose_name_plural = 'Данные специалистов из VK'
+        verbose_name = 'Данные из VK'
+        verbose_name_plural = 'Данные из VK'
 
     def __getitem__(self, key):
         return getattr(self, key)
+
+
+class PhoneNumberInformationSpecialist(models.Model):
+    information_source = models.ForeignKey(InformationSource, on_delete=models.CASCADE, verbose_name='Информационный источник')
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
+    phone = models.IntegerField(verbose_name='Номер телефона')
+    country = models.CharField(max_length=100, null=True, blank=True, verbose_name='Страна')
+    okrug = models.CharField(max_length=100, null=True, blank=True, verbose_name='Округ')
+    region = models.CharField(max_length=100, null=True, blank=True, verbose_name='Регион')
+    time_zone = models.CharField(max_length=100, null=True, blank=True, verbose_name='Временная зона')
+    oper_brand = models.CharField(max_length=100, null=True, blank=True, verbose_name='Мобильный оператор')
+
+    class Meta:
+        verbose_name = 'Данные номера телефона'
+        verbose_name_plural = 'Данные номеров телефонов'
