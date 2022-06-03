@@ -6,6 +6,13 @@
             <div class="col-8 col-lg-4 offset-2 offset-lg-4">
                 <form class="form-signin pt-5" enctype="multipart/form-data" method="POST">
                     {% csrf_token %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     <div class="text-center mt-5 b-1">
                         <h1 class="h3 mb-3 font-weight-normal">
                             Введите исходные данные
@@ -15,7 +22,7 @@
                     {% if need_to_process.form_vk %}
                         {{ form_vk|crispy }}
                     {% endif %}
-                    {% if need_to_process.form_vk %}
+                    {% if need_to_process.form_phone_number_information %}
                         {{ form_phone_number_information|crispy }}
                     {% endif %}
                     <button class="btn btn-lg btn-block btn-primary" type="submit">
