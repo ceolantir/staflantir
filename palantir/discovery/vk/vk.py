@@ -39,7 +39,7 @@ class VK:
         response = requests.get(url).json()
         response = response["response"]
         if not response:
-            raise exceptions.BadUserID
+            raise exceptions.BadUserID('BadUserID')
         else:
             if response[0].get('error', False):
                 self.response_processing(response)
@@ -191,13 +191,13 @@ class VK:
     @staticmethod
     def response_processing(response: Dict[str, Dict[str, Any]]) -> None:
         if response.get('error').get('error_msg') == 'This profile is private':
-            raise exceptions.ProfileIsPrivate
+            raise exceptions.ProfileIsPrivate('ProfileIsPrivate')
         elif response.get('error').get('error_msg') == 'User was deleted or banned':
-            raise exceptions.UserDeletedOrBanned
+            raise exceptions.UserDeletedOrBanned('UserDeletedOrBanned')
         elif response.get('error').get('error_msg') == 'Too many requests per second':
             time.sleep(1)
         else:
-            raise exceptions.UnidentifiedError
+            raise exceptions.UnidentifiedError('UnidentifiedError')
 
     @staticmethod
     def _graph_save(graph: Graph, picture_name: str, with_labels: bool = False, **kwargs) -> None:
