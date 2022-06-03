@@ -74,7 +74,7 @@ class InitialDataVKForm(forms.Form):
 
 
 class InitialDataPhoneNumberInformationForm(forms.Form):
-    phone = forms.CharField(max_length=100, required=False, label='Номер телефона')
+    phone = forms.CharField(max_length=100, label='Номер телефона')
 
     class Meta:
         fields = ('phone',)
