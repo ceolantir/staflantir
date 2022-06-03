@@ -74,7 +74,7 @@ class InitialDataVKForm(forms.Form):
 
 
 class InitialDataPhoneNumberInformationForm(forms.Form):
-    phone = forms.CharField(max_length=100, label='Номер телефона')
+    phone = forms.IntegerField(max_value=79999999999, min_value=70000000000, label='Номер телефона')
 
     class Meta:
         fields = ('phone',)
