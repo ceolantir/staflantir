@@ -41,18 +41,34 @@
                             </a>
                         </div>
                     </div>
-                    <div class="card px-3 my-3">
-                        <div class="card-body">
-                            <h4>
-                                {{ specialist_data_vk|verbose_name_plural }}
-                            </h4>
-                            <p>
-                                {% for key, value in specialist_data_vk_fields.items %}
-                                    {{ key }}: {{ value|linebreaksbr }} <br>
-                                {% endfor %}
-                            </p>
+                    {% if specialist_data_vk %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_data_vk|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_data_vk_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
+                    {% if specialist_data_phone %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_data_phone|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_data_phone.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
                 </section>
             </div>
         </div>
