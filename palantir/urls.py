@@ -5,10 +5,11 @@ from .views import (
     DetailInformationSourceView,
     SpecialistsView,
     DetailSpecialistView,
+    DetailSpecialistEditView,
     SearchView,
     ChoiceInformationSourcesView,
     ApplicationView,
-    DetailSpecialistEditView,
+    ErrorView,
 )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
     path('search/', SearchView.as_view(), name='search'),
     path('choice_information_sources/', ChoiceInformationSourcesView.as_view(), name='choice_information_sources'),
     path('application/<str:information_sources>/', ApplicationView.as_view(), name='application'),
+    path('error/<str:type_of_error>/', ErrorView.as_view(), name='error'),
 ]
