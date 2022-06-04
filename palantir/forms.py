@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import InformationSource, Specialist, VKDataSpecialist
+from .models import InformationSource, Specialist, VKInfo
 
 
 class InformationSourceForm(ModelForm):
@@ -42,13 +42,14 @@ class SearchForm(forms.Form):
 
 class InformationSourcesSelectionForm(forms.Form):
     vk = forms.BooleanField(required=False, label='VK')
-    phone_number_information = forms.BooleanField(required=False, label='Phone number information')
+    phone_number_information = forms.BooleanField(required=False, label='Phone number')
+    github = forms.BooleanField(required=False, label='GitHub')
     # instagram = forms.BooleanField(required=False, label='Instagram')
     # twitter = forms.BooleanField(required=False, label='Twitter')
     # pinterest = forms.BooleanField(required=False, label='Pinterest')
 
     class Meta:
-        fields = ('vk', 'instagram', 'twitter',)
+        fields = ('vk', 'phone_number_information', 'github',)
 
 
 class InitialDataForm(forms.Form):
@@ -73,16 +74,23 @@ class InitialDataVKForm(forms.Form):
         fields = ('first_name', 'last_name', 'user_id_vk',)
 
 
-class InitialDataPhoneNumberInformationForm(forms.Form):
+class InitialDataPhoneNumberInfoForm(forms.Form):
     phone = forms.IntegerField(max_value=79999999999, min_value=70000000000, label='Номер телефона')
 
     class Meta:
         fields = ('phone',)
 
 
+class InitialDataGitHubForm(forms.Form):
+    nickname = forms.CharField(max_length=100, label='Ник в GitHub')
+
+    class Meta:
+        fields = ('nickname',)
+
+
 class VKDataSpecialistForm(ModelForm):
     class Meta:
-        model = VKDataSpecialist
+        model = VKInfo
         fields = {
             'specialist',
             'vk_id',
