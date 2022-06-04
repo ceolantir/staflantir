@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic.base import TemplateView, View
 
 from . import constants
+from .discovery.github.github import GitHub
 from .discovery.phone_number.search_phone_info import search_phone
 from .discovery.vk.vk import VK
 from .forms import (
@@ -16,13 +17,15 @@ from .forms import (
     InitialDataForm,
     InitialDataVKForm,
     SpecialistForm,
-    InitialDataPhoneNumberInformationForm,
+    InitialDataPhoneNumberInfoForm,
+    InitialDataGitHubForm,
 )
 from .models import (
     InformationSource,
     Specialist,
-    VKDataSpecialist,
-    PhoneNumberInformationSpecialist,
+    VKInfo,
+    PhoneNumberInfo,
+    GitHubProfileInfo,
 )
 
 
@@ -73,9 +76,9 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
             owner=self.request.user,
         )
 
-        specialist_data_vk = VKDataSpecialist.objects.all().filter(Q(specialist=context['specialist']))
-        if specialist_data_vk:
-            context['specialist_data_vk'] = specialist_data_vk[0]
+        specialist_vk = VKInfo.objects.all().filter(Q(specialist=context['specialist']))
+        if specialist_vk:
+            context['specialist_data_vk'] = specialist_vk[0]
             context['specialist_data_vk_fields'] = {}
 
             for field in context['specialist_data_vk']._meta.get_fields():
@@ -89,16 +92,32 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
                 context['specialist_data_vk_fields'][field.verbose_name] = value
 
-        specialist_data_phone = PhoneNumberInformationSpecialist.objects.all().filter(Q(specialist=context['specialist']))
+        specialist_data_phone = PhoneNumberInfo.objects.all().filter(Q(specialist=context['specialist']))
         if specialist_data_phone:
-            context['specialist_data_phone'] = specialist_data_vk[0]
-            context['specialist_data_phone_fields'] = {}
+            context['specialist_phone_number'] = specialist_data_phone[0]
+            context['specialist_phone_number_fields'] = {}
 
-            for field in context['specialist_data_phone']._meta.get_fields():
+            for field in context['specialist_phone_number']._meta.get_fields():
                 key = str(field).split('.')[-1]
-                value = context['specialist_data_phone'][key]
+                value = context['specialist_phone_number'][key]
 
-                context['specialist_data_vk_fields'][field.verbose_name] = value
+                context['specialist_phone_number_fields'][field.verbose_name] = value
+
+        specialist_github = GitHubProfileInfo.objects.all().filter(Q(specialist=context['specialist']))
+        if specialist_github:
+            context['specialist_github'] = specialist_github[0]
+            context['specialist_github_fields'] = {}
+
+            for field in context['specialist_github']._meta.get_fields():
+                key = str(field).split('.')[-1]
+                if key in ('githubreposinfo>', 'specialist', 'id'):
+                    continue
+
+                value = context['specialist_github'][key]
+                if value is None:
+                    continue
+
+                context['specialist_github_fields'][field.verbose_name] = value
 
         return context
 
@@ -216,8 +235,10 @@ class ChoiceInformationSourcesView(LoginRequiredMixin, View):
 
 
 class NeedToProcessInformationSources(NamedTuple):
+    form: bool
     form_vk: bool
-    form_phone_number_information: bool
+    form_phone_number: bool
+    form_github: bool
 
 
 class ApplicationView(LoginRequiredMixin, TemplateView):
@@ -229,22 +250,22 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
         information_sources = kwargs['information_sources'].split(',')
         context = super(ApplicationView, self).get_context_data(**kwargs)
         context['need_to_process'] = NeedToProcessInformationSources(
+            form=True,
             form_vk=False,
-            form_phone_number_information=False,
+            form_phone_number=False,
+            form_github=False,
         )
-        context['form'] = InitialDataForm
+        context['forms'] = [InitialDataForm]
         if 'vk' in information_sources:
-            context['form_vk'] = InitialDataVKForm
-            context['need_to_process'] = context['need_to_process']._replace(form_vk=True)
+            context['forms'].append(InitialDataVKForm)
         if 'phone_number_information' in information_sources:
-            context['form_phone_number_information'] = InitialDataPhoneNumberInformationForm
-            context['need_to_process'] = context['need_to_process']._replace(form_phone_number_information=True)
+            context['forms'].append(InitialDataPhoneNumberInfoForm)
+        if 'github' in information_sources:
+            context['forms'].append(InitialDataGitHubForm)
 
         return context
 
     def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-
         specialist, specialist_created = Specialist.objects.update_or_create(
             first_name=self.request.POST.get('first_name'),
             last_name=self.request.POST.get('last_name'),
@@ -257,7 +278,7 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
             vk_info = VK(vk_id).get_vk_info(self.request.POST.get('visualization_friends', False))
 
             try:
-                vk_data_specialist = VKDataSpecialist.objects.get(specialist=specialist, vk_id=vk_info['vk_id'])
+                vk_data_specialist = VKInfo.objects.get(specialist=specialist, vk_id=vk_info['vk_id'])
 
                 for key, value in vk_info.items():
                     if key == 'vk_id':
@@ -265,18 +286,26 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
                     setattr(vk_data_specialist, key, value)
 
                 vk_data_specialist.save()
-            except VKDataSpecialist.DoesNotExist:
-                vk_data_specialist = VKDataSpecialist()
+            except VKInfo.DoesNotExist:
+                vk_data_specialist = VKInfo()
                 vk_data_specialist.specialist = specialist
 
                 for key, value in vk_info.items():
                     setattr(vk_data_specialist, key, value)
 
                 vk_data_specialist.save()
+
         # if 'phone_number_information' in information_sources:
         #     phone = self.request.POST.get('phone')
         #
         #     phone_info = search_phone(phone)
+
+        if 'github' in information_sources:
+            info_from_github = GitHub()
+            info_from_github(
+                self.request.POST.get('nickname'),
+                specialist,
+            )
 
         return redirect(f'/specialists/{specialist.pk}')
 
