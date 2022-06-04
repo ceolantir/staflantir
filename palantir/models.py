@@ -53,8 +53,7 @@ class Specialist(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
-class VKDataSpecialist(models.Model):
-    information_source = models.ForeignKey(InformationSource, on_delete=models.CASCADE, verbose_name='Информационный источник')
+class VKInfo(models.Model):
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
     first_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='Имя')
     last_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='Фамилия')
@@ -101,8 +100,7 @@ class VKDataSpecialist(models.Model):
         return getattr(self, key)
 
 
-class PhoneNumberInformationSpecialist(models.Model):
-    information_source = models.ForeignKey(InformationSource, on_delete=models.CASCADE, verbose_name='Информационный источник')
+class PhoneNumberInfo(models.Model):
     specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
     phone = models.IntegerField(verbose_name='Номер телефона')
     country = models.CharField(max_length=100, null=True, blank=True, verbose_name='Страна')
@@ -114,3 +112,50 @@ class PhoneNumberInformationSpecialist(models.Model):
     class Meta:
         verbose_name = 'Данные номера телефона'
         verbose_name_plural = 'Данные номеров телефонов'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+class GitHubProfileInfo(models.Model):
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
+    name = models.CharField(max_length=100, verbose_name='Ник')
+    public_repos = models.CharField(max_length=100, null=True, blank=True, verbose_name='Публичных репозиториев')
+    followers = models.CharField(max_length=100, null=True, blank=True, verbose_name='Подписчиков')
+    following = models.CharField(max_length=100, null=True, blank=True, verbose_name='Подписан')
+    created_at = models.CharField(max_length=100, null=True, blank=True, verbose_name='Создан')
+    updated_at = models.CharField(max_length=100, null=True, blank=True, verbose_name='Обновлен')
+    company = models.CharField(max_length=1000, null=True, blank=True, verbose_name='Компания')
+    blog = models.CharField(max_length=1000, null=True, blank=True, verbose_name='Блог')
+    location = models.CharField(max_length=1000, null=True, blank=True, verbose_name='Локация')
+    email = models.CharField(max_length=100, null=True, blank=True, verbose_name='Почта')
+    bio = models.CharField(max_length=1000, null=True, blank=True, verbose_name='О себе')
+    twitter_username = models.CharField(max_length=100, null=True, blank=True, verbose_name='Ник в твиттере')
+
+    class Meta:
+        verbose_name = 'Данные профиля из GitHub'
+        verbose_name_plural = 'Данные профилей из GitHub'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+class GitHubReposInfo(models.Model):
+    profile = models.ForeignKey(GitHubProfileInfo, on_delete=models.CASCADE, verbose_name='Профиль в Github')
+    name = models.CharField(max_length=100, verbose_name='Ник')
+    language = models.CharField(max_length=100, null=True, blank=True, verbose_name='Язык программирования')
+    visibility = models.CharField(max_length=100, null=True, blank=True, verbose_name='Публичный')
+    archived = models.CharField(max_length=100, null=True, blank=True, verbose_name='Архивирован')
+    fork = models.CharField(max_length=100, null=True, blank=True, verbose_name='Форкнут')
+    created_at = models.CharField(max_length=100, null=True, blank=True, verbose_name='Создан')
+    updated_at = models.CharField(max_length=100, null=True, blank=True, verbose_name='Обновлен')
+    stargazers_count = models.CharField(max_length=100, null=True, blank=True, verbose_name='Количество звезд')
+    forks = models.CharField(max_length=100, null=True, blank=True, verbose_name='Количество форков')
+    contributors_info = models.CharField(max_length=2000, null=True, blank=True, verbose_name='Контрибьюторы')
+
+    class Meta:
+        verbose_name = 'Данные репозиториев профиля из GitHub'
+        verbose_name_plural = 'Данные репозиториев профилей из GitHub'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
