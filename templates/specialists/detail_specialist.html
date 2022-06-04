@@ -62,7 +62,21 @@
                                     {{ specialist_data_phone|verbose_name }}
                                 </h4>
                                 <p>
-                                    {% for key, value in specialist_data_phone.items %}
+                                    {% for key, value in specialist_phone_number_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if specialist_github %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_github|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_github_fields.items %}
                                         {{ key }}: {{ value|linebreaksbr }} <br>
                                     {% endfor %}
                                 </p>
