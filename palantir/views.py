@@ -26,6 +26,7 @@ from .models import (
     VKInfo,
     PhoneNumberInfo,
     GitHubProfileInfo,
+    GitHubReposInfo,
 )
 
 
@@ -57,7 +58,9 @@ class SpecialistsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SpecialistsView, self).get_context_data(**kwargs)
-        context['specialists'] = Specialist.objects.all().filter(Q(owner=self.request.user)).order_by('last_name')
+        context['specialists'] = Specialist.objects.all().filter(
+            Q(owner=self.request.user),
+        ).order_by('last_name')
         context['form'] = SearchForm
 
         return context
@@ -92,7 +95,9 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
                 context['specialist_data_vk_fields'][field.verbose_name] = value
 
-        specialist_data_phone = PhoneNumberInfo.objects.all().filter(Q(specialist=context['specialist']))
+        specialist_data_phone = PhoneNumberInfo.objects.all().filter(
+            Q(specialist=context['specialist']),
+        )
         if specialist_data_phone:
             context['specialist_phone_number'] = specialist_data_phone[0]
             context['specialist_phone_number_fields'] = {}
@@ -106,21 +111,46 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
                 context['specialist_phone_number_fields'][field.verbose_name] = value
 
-        specialist_github = GitHubProfileInfo.objects.all().filter(Q(specialist=context['specialist']))
-        if specialist_github:
-            context['specialist_github'] = specialist_github[0]
-            context['specialist_github_fields'] = {}
+        specialist_github_profile_info = GitHubProfileInfo.objects.all().filter(
+            Q(specialist=context['specialist']),
+        )
+        if specialist_github_profile_info:
+            context['specialist_github_profile_info'] = specialist_github_profile_info[0]
+            context['specialist_github_profile_info_fields'] = {}
 
-            for field in context['specialist_github']._meta.get_fields():
+            for field in context['specialist_github_profile_info']._meta.get_fields():
                 key = str(field).split('.')[-1]
                 if key in ('githubreposinfo>', 'id', 'specialist'):
                     continue
 
-                value = context['specialist_github'][key]
+                value = context['specialist_github_profile_info'][key]
                 if value is None:
                     continue
 
-                context['specialist_github_fields'][field.verbose_name] = value
+                context['specialist_github_profile_info_fields'][field.verbose_name] = value
+
+            specialist_github_repos_objects = GitHubReposInfo.objects.all().filter(
+                Q(profile=context['specialist_github_profile_info']),
+            )
+            specialist_github_repos_info_fields = []
+
+            for specialist_github_repo_info in specialist_github_repos_objects:
+                specialist_github_repo_info_fields = {}
+
+                for field in specialist_github_repo_info._meta.get_fields():
+                    key = str(field).split('.')[-1]
+                    if key in ('id', 'profile'):
+                        continue
+
+                    value = specialist_github_repo_info[key]
+                    if value is None:
+                        continue
+
+                    specialist_github_repo_info_fields[field.verbose_name] = value
+
+                specialist_github_repos_info_fields.append(specialist_github_repo_info_fields)
+
+            context['specialist_github_repos_info_fields'] = specialist_github_repos_info_fields
 
         return context
 

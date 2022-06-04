@@ -142,7 +142,7 @@ class GitHubProfileInfo(models.Model):
 
 class GitHubReposInfo(models.Model):
     profile = models.ForeignKey(GitHubProfileInfo, on_delete=models.CASCADE, verbose_name='Профиль в Github')
-    name = models.CharField(max_length=100, verbose_name='Ник')
+    name = models.CharField(max_length=100, verbose_name='Название репозитория')
     language = models.CharField(max_length=100, null=True, blank=True, verbose_name='Язык программирования')
     visibility = models.CharField(max_length=100, null=True, blank=True, verbose_name='Публичный')
     archived = models.CharField(max_length=100, null=True, blank=True, verbose_name='Архивирован')

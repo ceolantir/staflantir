@@ -69,17 +69,24 @@
                             </div>
                         </div>
                     {% endif %}
-                    {% if specialist_github %}
+                    {% if specialist_github_profile_info %}
                         <div class="card px-3 my-3">
                             <div class="card-body">
                                 <h4>
-                                    {{ specialist_github|verbose_name }}
+                                    {{ specialist_github_profile_info|verbose_name }}
                                 </h4>
                                 <p>
                                     {% for key, value in specialist_github_fields.items %}
                                         {{ key }}: {{ value|linebreaksbr }} <br>
                                     {% endfor %}
                                 </p>
+                                {% for specialist_github_repo_info_fields in specialist_github_repos_info_fields %}
+                                    <p>
+                                        {% for key, value in specialist_github_repo_info_fields.items %}
+                                            {{ key }}: {{ value|linebreaksbr }} <br>
+                                        {% endfor %}
+                                    </p>
+                                {% endfor %}
                             </div>
                         </div>
                     {% endif %}

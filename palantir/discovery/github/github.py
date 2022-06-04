@@ -108,7 +108,10 @@ class GitHub:
         profile_specialist_info.save()
 
         for repo_info in repos_info:
-            repos_specialist_info = GitHubReposInfo.objects.update_or_create(profile=profile_specialist_info)[0]
+            repos_specialist_info = GitHubReposInfo.objects.update_or_create(
+                profile=profile_specialist_info,
+                name=repo_info['name'],
+            )[0]
             for key, value in repo_info.items():
                 setattr(repos_specialist_info, key, value)
             repos_specialist_info.save()
