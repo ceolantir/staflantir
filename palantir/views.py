@@ -9,7 +9,7 @@ from django.views.generic.base import TemplateView, View
 
 from . import constants
 from .discovery.github.github import GitHub
-from .discovery.phone_number.search_phone_info import search_phone
+from .discovery.phone_number.search_phone_info import PhoneNumber
 from .discovery.vk.vk import VK
 from .forms import (
     SearchForm,
@@ -99,6 +99,9 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
             for field in context['specialist_phone_number']._meta.get_fields():
                 key = str(field).split('.')[-1]
+                if key in ('id',):
+                    continue
+
                 value = context['specialist_phone_number'][key]
 
                 context['specialist_phone_number_fields'][field.verbose_name] = value
@@ -295,10 +298,12 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
 
                 vk_data_specialist.save()
 
-        # if 'phone_number_information' in information_sources:
-        #     phone = self.request.POST.get('phone')
-        #
-        #     phone_info = search_phone(phone)
+        if 'phone_number_information' in information_sources:
+            info_from_phone_number = PhoneNumber()
+            info_from_phone_number(
+                self.request.POST.get('phone'),
+                specialist,
+            )
 
         if 'github' in information_sources:
             info_from_github = GitHub()
