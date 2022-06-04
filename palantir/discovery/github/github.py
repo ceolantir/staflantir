@@ -38,12 +38,10 @@ class GitHub:
         if response.get('message', False):
             if 'API rate limit exceeded' in response['message']:
                 raise exceptions.APIRateLimitExceeded('APIRateLimitExceeded')
-        profile_info = self._get_info_from_response(
+        return self._get_info_from_response(
             response,
             constants.attributes_for_profile_info,
         )
-
-        return profile_info
 
     def _get_repos_info(self, nickname: str) -> List[Dict[str, Any]]:
         url = f'{self._base_url}/users/{nickname}/repos'

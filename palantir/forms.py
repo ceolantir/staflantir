@@ -55,7 +55,6 @@ class InformationSourcesSelectionForm(forms.Form):
 class InitialDataForm(forms.Form):
     first_name = forms.CharField(max_length=30, label='Имя')
     last_name = forms.CharField(max_length=30, label='Фамилия')
-    # username = forms.CharField(max_length=100, required=False, label='Username')
 
     class Meta:
         fields = ('first_name', 'last_name',)
