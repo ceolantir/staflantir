@@ -19,12 +19,9 @@
                         </h1>
                     </div>
                     {{ form|crispy }}
-                    {% if need_to_process.form_vk %}
-                        {{ form_vk|crispy }}
-                    {% endif %}
-                    {% if need_to_process.form_phone_number_information %}
-                        {{ form_phone_number_information|crispy }}
-                    {% endif %}
+                    {% for form in forms %}
+                        {{ form|crispy }}
+                    {% endfor %}
                     <button class="btn btn-lg btn-block btn-primary" type="submit">
                         Отправить заявку
                     </button>
