@@ -99,7 +99,7 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
             for field in context['specialist_phone_number']._meta.get_fields():
                 key = str(field).split('.')[-1]
-                if key in ('id',):
+                if key in ('id', 'specialist'):
                     continue
 
                 value = context['specialist_phone_number'][key]
@@ -113,7 +113,7 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
             for field in context['specialist_github']._meta.get_fields():
                 key = str(field).split('.')[-1]
-                if key in ('githubreposinfo>', 'specialist', 'id'):
+                if key in ('githubreposinfo>', 'id', 'specialist'):
                     continue
 
                 value = context['specialist_github'][key]
