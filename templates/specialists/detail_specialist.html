@@ -55,11 +55,11 @@
                             </div>
                         </div>
                     {% endif %}
-                    {% if specialist_data_phone %}
+                    {% if specialist_phone_number %}
                         <div class="card px-3 my-3">
                             <div class="card-body">
                                 <h4>
-                                    {{ specialist_data_phone|verbose_name }}
+                                    {{ specialist_phone_number|verbose_name }}
                                 </h4>
                                 <p>
                                     {% for key, value in specialist_phone_number_fields.items %}
