@@ -10,6 +10,7 @@ from django.views.generic.base import TemplateView, View
 from . import constants
 from .discovery.github.github import GitHub
 from .discovery.phone_number.search_phone_info import PhoneNumber
+from .discovery.steam.steam import Steam
 from .discovery.vk.vk import VK
 from .forms import (
     SearchForm,
@@ -18,7 +19,7 @@ from .forms import (
     InitialDataVKForm,
     SpecialistForm,
     InitialDataPhoneNumberInfoForm,
-    InitialDataGitHubForm,
+    InitialDataGitHubSteamForm,
 )
 from .models import (
     InformationSource,
@@ -27,6 +28,8 @@ from .models import (
     PhoneNumberInfo,
     GitHubProfileInfo,
     GitHubReposInfo,
+    SteamProfileInfo,
+    SteamReposInfo,
 )
 
 
@@ -152,6 +155,47 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
             context['specialist_github_repos_info_fields'] = specialist_github_repos_info_fields
 
+        specialist_steam_profile_info = SteamProfileInfo.objects.all().filter(
+            Q(specialist=context['specialist']),
+        )
+        if specialist_steam_profile_info:
+            context['specialist_steam_profile_info'] = specialist_steam_profile_info[0]
+            context['specialist_steam_profile_info_fields'] = {}
+
+            for field in context['specialist_steam_profile_info']._meta.get_fields():
+                key = str(field).split('.')[-1]
+                if key in ('steamreposinfo>', 'id', 'specialist'):
+                    continue
+
+                value = context['specialist_steam_profile_info'][key]
+                if value is None:
+                    continue
+
+                context['specialist_steam_profile_info_fields'][field.verbose_name] = value
+
+            specialist_steam_repos_objects = SteamReposInfo.objects.all().filter(
+                Q(profile=context['specialist_steam_profile_info']),
+            )
+            specialist_steam_repos_info_fields = []
+
+            for specialist_github_repo_info in specialist_steam_repos_objects:
+                specialist_steam_repo_info_fields = {}
+
+                for field in specialist_github_repo_info._meta.get_fields():
+                    key = str(field).split('.')[-1]
+                    if key in ('id', 'profile'):
+                        continue
+
+                    value = specialist_github_repo_info[key]
+                    if value is None:
+                        value = 0
+
+                    specialist_steam_repo_info_fields[field.verbose_name] = value
+
+                specialist_steam_repos_info_fields.append(specialist_steam_repo_info_fields)
+
+            context['specialist_steam_repos_info_fields'] = specialist_steam_repos_info_fields
+
         return context
 
 
@@ -267,13 +311,6 @@ class ChoiceInformationSourcesView(LoginRequiredMixin, View):
         )
 
 
-class NeedToProcessInformationSources(NamedTuple):
-    form: bool
-    form_vk: bool
-    form_phone_number: bool
-    form_github: bool
-
-
 class ApplicationView(LoginRequiredMixin, TemplateView):
     login_url = '/login/'
     redirect_field_name = '/'
@@ -282,19 +319,14 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         information_sources = kwargs['information_sources'].split(',')
         context = super(ApplicationView, self).get_context_data(**kwargs)
-        context['need_to_process'] = NeedToProcessInformationSources(
-            form=True,
-            form_vk=False,
-            form_phone_number=False,
-            form_github=False,
-        )
         context['forms'] = [InitialDataForm]
         if 'vk' in information_sources:
             context['forms'].append(InitialDataVKForm)
         if 'phone_number_information' in information_sources:
             context['forms'].append(InitialDataPhoneNumberInfoForm)
-        if 'github' in information_sources:
-            context['forms'].append(InitialDataGitHubForm)
+        if ('github' in information_sources or 'steam' in information_sources) \
+                and InitialDataGitHubSteamForm not in context['forms']:
+            context['forms'].append(InitialDataGitHubSteamForm)
 
         return context
 
@@ -342,6 +374,13 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
                 specialist,
             )
 
+        if 'steam' in information_sources:
+            info_from_github = Steam()
+            info_from_github(
+                self.request.POST.get('nickname'),
+                specialist,
+            )
+
         return redirect(f'/specialists/{specialist.pk}')
 
 
@@ -364,6 +403,9 @@ class ErrorView(LoginRequiredMixin, TemplateView):
                                     'связи с чем доступ к некоторому функционалу ограничен.'
         elif type_of_error == 'PhoneError':
             context['error_text'] = 'Информация по данному телефону не получена. ' \
+                                    'Проверьте введенные данные или повторите попытку позже.'
+        elif type_of_error == 'SteamError':
+            context['error_text'] = 'Информация по данному нику не получена. ' \
                                     'Проверьте введенные данные или повторите попытку позже.'
         else:
             context['error_text'] = 'Неопознанная ошибка. Проверьте введенные данные.'
