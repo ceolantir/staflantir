@@ -47,9 +47,10 @@ class InformationSourcesSelectionForm(forms.Form):
     steam = forms.BooleanField(required=False, label='Steam')
     habr = forms.BooleanField(required=False, label='Habr')
     stackoverflow = forms.BooleanField(required=False, label='StackOverflow')
-    # instagram = forms.BooleanField(required=False, label='Instagram')
-    # twitter = forms.BooleanField(required=False, label='Twitter')
-    # pinterest = forms.BooleanField(required=False, label='Pinterest')
+    instagram = forms.BooleanField(required=False, label='Instagram')
+    twitter = forms.BooleanField(required=False, label='Twitter')
+    pinterest = forms.BooleanField(required=False, label='Pinterest')
+    linkedin = forms.BooleanField(required=False, label='Linkedin')
 
     class Meta:
         fields = ('vk', 'phone_number_information', 'github',)

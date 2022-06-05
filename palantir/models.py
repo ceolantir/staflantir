@@ -15,6 +15,7 @@ class InformationSource(models.Model):
     title = models.CharField(max_length=30, verbose_name='Название')
     description = models.TextField(max_length=2000, verbose_name='Информация')
     image = models.ImageField(upload_to=MEDIA_INFORMATION_SOURCES_IMAGE_DIR, verbose_name='Лого')
+    url = models.URLField(max_length=1000, null=True, blank=True, verbose_name='Ссылка на источник')
 
     class Meta:
         verbose_name = 'Информационный источник'
