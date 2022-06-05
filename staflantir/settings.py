@@ -86,14 +86,17 @@ USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_APP_DIR = 'static'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
+
 MEDIA_INFORMATION_SOURCES_IMAGE_DIR = 'information_sources'
 MEDIA_SPECIALISTS_IMAGE_DIR = 'specialists'
 MEDIA_SPECIALISTS_IMAGE_DIR_default = 'specialists/default_specialist_image.jpg'
+MEDIA_VK_DATA_IMAGE_DIR = 'vk_data'
+MEDIA_VK_DATA_IMAGE_DIR_default = 'vk_data/default_visualization_of_friends_image.png'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

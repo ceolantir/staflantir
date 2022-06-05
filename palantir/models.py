@@ -6,6 +6,8 @@ from staflantir.settings import (
     MEDIA_INFORMATION_SOURCES_IMAGE_DIR,
     MEDIA_SPECIALISTS_IMAGE_DIR,
     MEDIA_SPECIALISTS_IMAGE_DIR_default,
+    MEDIA_VK_DATA_IMAGE_DIR,
+    MEDIA_VK_DATA_IMAGE_DIR_default,
 )
 
 
@@ -91,6 +93,11 @@ class VKInfo(models.Model):
     photo_200_orig = models.CharField(max_length=1000, null=True, blank=True, verbose_name='URL фотографии, имеющей ширину 200 пикселей')
     photo_400_orig = models.CharField(max_length=1000, null=True, blank=True, verbose_name='URL фотографии, имеющей ширину 400 пикселей')
     visualization_of_friends_picture_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='Визуализация друзей')
+    visualization_of_friends_default_picture_name = models.ImageField(
+        upload_to=MEDIA_VK_DATA_IMAGE_DIR,
+        default=MEDIA_VK_DATA_IMAGE_DIR_default,
+        verbose_name='Визуализация друзей',
+    )
 
     class Meta:
         verbose_name = 'Данные из VK'
