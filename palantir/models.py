@@ -225,3 +225,19 @@ class HabrReposInfo(models.Model):
 
     def __getitem__(self, key):
         return getattr(self, key)
+
+
+class StackOverflowProfileInfo(models.Model):
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
+    name = models.CharField(max_length=100, verbose_name='Ник')
+    reputation = models.IntegerField(null=True, blank=True, verbose_name='Репутация')
+    affected = models.IntegerField(null=True, blank=True, verbose_name='Примерное число раз, когда посетители видели полезные сообщения')
+    answers = models.IntegerField(null=True, blank=True, verbose_name='Количество данных ответов')
+    questions = models.IntegerField(null=True, blank=True, verbose_name='Количество заданных вопросов')
+
+    class Meta:
+        verbose_name = 'Данные из StackOverflow'
+        verbose_name_plural = 'Данные из StackOverflow'
+
+    def __getitem__(self, key):
+        return getattr(self, key)

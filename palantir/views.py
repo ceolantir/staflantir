@@ -9,6 +9,7 @@ from . import constants
 from .discovery.github.github import GitHub
 from .discovery.habr.habr import Habr
 from .discovery.phone_number.search_phone_info import PhoneNumber
+from .discovery.stackoverflow.stackoverflow import StackOverflow
 from .discovery.steam.steam import Steam
 from .discovery.vk.vk import VK
 from .forms import (
@@ -21,6 +22,7 @@ from .forms import (
     InitialDataGitHubForm,
     InitialDataSteamForm,
     InitialDataHabrForm,
+    InitialDataStackOverflowForm,
 )
 from .models import (
     InformationSource,
@@ -33,6 +35,7 @@ from .models import (
     SteamReposInfo,
     HabrProfileInfo,
     HabrReposInfo,
+    StackOverflowProfileInfo,
 )
 
 
@@ -240,6 +243,24 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
             context['specialist_habr_repos_info_fields'] = specialist_habr_repos_info_fields
 
+        specialist_stackoverflow_profile_info = StackOverflowProfileInfo.objects.all().filter(
+            Q(specialist=context['specialist']),
+        )
+        if specialist_stackoverflow_profile_info:
+            context['specialist_stackoverflow_profile_info'] = specialist_stackoverflow_profile_info[0]
+            context['specialist_stackoverflow_profile_info_fields'] = {}
+
+            for field in context['specialist_stackoverflow_profile_info']._meta.get_fields():
+                key = str(field).split('.')[-1]
+                if key in ('stackoverflowreposinfo>', 'id', 'specialist'):
+                    continue
+
+                value = context['specialist_stackoverflow_profile_info'][key]
+                if value is None:
+                    continue
+
+                context['specialist_stackoverflow_profile_info_fields'][field.verbose_name] = value
+
         return context
 
 
@@ -374,6 +395,8 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
             context['forms'].append(InitialDataSteamForm)
         if 'habr' in information_sources:
             context['forms'].append(InitialDataHabrForm)
+        if 'stackoverflow' in information_sources:
+            context['forms'].append(InitialDataStackOverflowForm)
 
         return context
 
@@ -432,6 +455,13 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
             info_from_habr = Habr()
             info_from_habr(
                 self.request.POST.get('habr_nickname'),
+                specialist,
+            )
+
+        if 'stackoverflow' in information_sources:
+            info_from_stackoverflow = StackOverflow()
+            info_from_stackoverflow(
+                self.request.POST.get('stackoverflow_nickname'),
                 specialist,
             )
 

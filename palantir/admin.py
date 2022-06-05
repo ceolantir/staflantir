@@ -11,6 +11,7 @@ from .models import (
     SteamReposInfo,
     HabrProfileInfo,
     HabrReposInfo,
+    StackOverflowProfileInfo,
 )
 
 
@@ -121,4 +122,15 @@ class HabrReposInfoSpecialistAdmin(admin.ModelAdmin):
     )
     list_display_links = ('profile', 'url',)
     list_filter = ('profile', 'profile__specialist', 'profile__specialist__owner',)
-    ordering = ('rating',)
+
+
+@admin.register(StackOverflowProfileInfo)
+class StackOverflowProfileInfoSpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'specialist',
+        'name'
+    )
+    list_display_links = ('specialist', 'name',)
+    list_filter = ('specialist', 'specialist__owner',)
+    ordering = ('reputation', 'affected', 'answers', 'questions',)

@@ -46,6 +46,7 @@ class InformationSourcesSelectionForm(forms.Form):
     github = forms.BooleanField(required=False, label='GitHub')
     steam = forms.BooleanField(required=False, label='Steam')
     habr = forms.BooleanField(required=False, label='Habr')
+    stackoverflow = forms.BooleanField(required=False, label='StackOverflow')
     # instagram = forms.BooleanField(required=False, label='Instagram')
     # twitter = forms.BooleanField(required=False, label='Twitter')
     # pinterest = forms.BooleanField(required=False, label='Pinterest')
@@ -101,3 +102,10 @@ class InitialDataHabrForm(forms.Form):
 
     class Meta:
         fields = ('habr_nickname',)
+
+
+class InitialDataStackOverflowForm(forms.Form):
+    stackoverflow_nickname = forms.CharField(max_length=100, label='Ник в StackOverflow')
+
+    class Meta:
+        fields = ('stackoverflow_nickname',)

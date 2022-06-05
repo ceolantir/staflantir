@@ -1,0 +1,2 @@
+class StackOverflowError(Exception):
+    pass

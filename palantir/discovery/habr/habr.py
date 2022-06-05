@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Union, Any
 
 import requests
 from bs4 import BeautifulSoup
@@ -47,7 +47,7 @@ class Habr:
 
         return profile_info
 
-    def _get_profile_posts(self):
+    def _get_profile_posts(self) -> List[Dict[str, Union[Union[int, str], Any]]]:
         url = f'{self._base_url}/posts/'
         soup = BeautifulSoup(requests.get(url).text, 'html.parser')
         posts = soup.find('div', 'tm-sub-page__main').findAll('article', 'tm-articles-list__item')
