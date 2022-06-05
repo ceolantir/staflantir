@@ -8,6 +8,8 @@ error_tuple = (
     'UnidentifiedError',
     'PhoneError',
     'SteamError',
+    'APIRateLimitExceeded',
+    'HabrError',
 )
 
 

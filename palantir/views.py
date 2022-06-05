@@ -1,5 +1,3 @@
-from typing import NamedTuple
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Value as V, Q
 from django.db.models.functions import Concat
@@ -9,6 +7,7 @@ from django.views.generic.base import TemplateView, View
 
 from . import constants
 from .discovery.github.github import GitHub
+from .discovery.habr.habr import Habr
 from .discovery.phone_number.search_phone_info import PhoneNumber
 from .discovery.steam.steam import Steam
 from .discovery.vk.vk import VK
@@ -19,7 +18,9 @@ from .forms import (
     InitialDataVKForm,
     SpecialistForm,
     InitialDataPhoneNumberInfoForm,
-    InitialDataGitHubSteamForm,
+    InitialDataGitHubForm,
+    InitialDataSteamForm,
+    InitialDataHabrForm,
 )
 from .models import (
     InformationSource,
@@ -30,6 +31,8 @@ from .models import (
     GitHubReposInfo,
     SteamProfileInfo,
     SteamReposInfo,
+    HabrProfileInfo,
+    HabrReposInfo,
 )
 
 
@@ -196,6 +199,47 @@ class DetailSpecialistView(LoginRequiredMixin, TemplateView):
 
             context['specialist_steam_repos_info_fields'] = specialist_steam_repos_info_fields
 
+        specialist_habr_profile_info = HabrProfileInfo.objects.all().filter(
+            Q(specialist=context['specialist']),
+        )
+        if specialist_habr_profile_info:
+            context['specialist_habr_profile_info'] = specialist_habr_profile_info[0]
+            context['specialist_habr_profile_info_fields'] = {}
+
+            for field in context['specialist_habr_profile_info']._meta.get_fields():
+                key = str(field).split('.')[-1]
+                if key in ('habrreposinfo>', 'id', 'specialist'):
+                    continue
+
+                value = context['specialist_habr_profile_info'][key]
+                if value is None:
+                    continue
+
+                context['specialist_habr_profile_info_fields'][field.verbose_name] = value
+
+            specialist_habr_repos_objects = HabrReposInfo.objects.all().filter(
+                Q(profile=context['specialist_habr_profile_info']),
+            )
+            specialist_habr_repos_info_fields = []
+
+            for specialist_github_repo_info in specialist_habr_repos_objects:
+                specialist_habr_repo_info_fields = {}
+
+                for field in specialist_github_repo_info._meta.get_fields():
+                    key = str(field).split('.')[-1]
+                    if key in ('id', 'profile'):
+                        continue
+
+                    value = specialist_github_repo_info[key]
+                    if value is None:
+                        value = 0
+
+                    specialist_habr_repo_info_fields[field.verbose_name] = value
+
+                specialist_habr_repos_info_fields.append(specialist_habr_repo_info_fields)
+
+            context['specialist_habr_repos_info_fields'] = specialist_habr_repos_info_fields
+
         return context
 
 
@@ -324,9 +368,12 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
             context['forms'].append(InitialDataVKForm)
         if 'phone_number_information' in information_sources:
             context['forms'].append(InitialDataPhoneNumberInfoForm)
-        if ('github' in information_sources or 'steam' in information_sources) \
-                and InitialDataGitHubSteamForm not in context['forms']:
-            context['forms'].append(InitialDataGitHubSteamForm)
+        if 'github' in information_sources:
+            context['forms'].append(InitialDataGitHubForm)
+        if 'steam' in information_sources:
+            context['forms'].append(InitialDataSteamForm)
+        if 'habr' in information_sources:
+            context['forms'].append(InitialDataHabrForm)
 
         return context
 
@@ -370,14 +417,21 @@ class ApplicationView(LoginRequiredMixin, TemplateView):
         if 'github' in information_sources:
             info_from_github = GitHub()
             info_from_github(
-                self.request.POST.get('nickname'),
+                self.request.POST.get('github_nickname'),
                 specialist,
             )
 
         if 'steam' in information_sources:
-            info_from_github = Steam()
-            info_from_github(
-                self.request.POST.get('nickname'),
+            info_from_steam = Steam()
+            info_from_steam(
+                self.request.POST.get('steam_nickname'),
+                specialist,
+            )
+
+        if 'habr' in information_sources:
+            info_from_habr = Habr()
+            info_from_habr(
+                self.request.POST.get('habr_nickname'),
                 specialist,
             )
 
@@ -404,9 +458,12 @@ class ErrorView(LoginRequiredMixin, TemplateView):
         elif type_of_error == 'PhoneError':
             context['error_text'] = 'Информация по данному телефону не получена. ' \
                                     'Проверьте введенные данные или повторите попытку позже.'
-        elif type_of_error == 'SteamError':
+        elif type_of_error in ('SteamError', 'HabrError'):
             context['error_text'] = 'Информация по данному нику не получена. ' \
                                     'Проверьте введенные данные или повторите попытку позже.'
+        elif type_of_error == 'APIRateLimitExceeded':
+            context['error_text'] = 'Информация по аккаунту не получена. ' \
+                                    'Повторите попытку позже.'
         else:
             context['error_text'] = 'Неопознанная ошибка. Проверьте введенные данные.'
 

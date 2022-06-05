@@ -195,3 +195,33 @@ class SteamReposInfo(models.Model):
 
     def __getitem__(self, key):
         return getattr(self, key)
+
+
+class HabrProfileInfo(models.Model):
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
+    name = models.CharField(max_length=100, verbose_name='Ник')
+    rating_place = models.CharField(max_length=10, null=True, blank=True, verbose_name='Рейтинг')
+    location = models.CharField(max_length=100, null=True, blank=True, verbose_name='Откуда')
+    job = models.CharField(max_length=100, null=True, blank=True, verbose_name='Работа')
+    birthday = models.CharField(max_length=25, null=True, blank=True, verbose_name='Дата рождения')
+    registered = models.CharField(max_length=25, null=True, blank=True, verbose_name='Зарегистрирован')
+
+    class Meta:
+        verbose_name = 'Данные из Habr'
+        verbose_name_plural = 'Данные из Habr'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+class HabrReposInfo(models.Model):
+    profile = models.ForeignKey(HabrProfileInfo, on_delete=models.CASCADE, verbose_name='Профиль в Steam')
+    url = models.CharField(max_length=1000, verbose_name='Ссылка на пост')
+    rating = models.IntegerField(null=True, blank=True, verbose_name='Рейтинг поста')
+
+    class Meta:
+        verbose_name = 'Данные постов профиля из Habr'
+        verbose_name_plural = 'Данные постов профилей из Habr'
+
+    def __getitem__(self, key):
+        return getattr(self, key)

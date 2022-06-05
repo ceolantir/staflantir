@@ -1,0 +1,2 @@
+class HabrError(Exception):
+    pass

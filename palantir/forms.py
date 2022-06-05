@@ -45,6 +45,7 @@ class InformationSourcesSelectionForm(forms.Form):
     phone_number_information = forms.BooleanField(required=False, label='Phone number')
     github = forms.BooleanField(required=False, label='GitHub')
     steam = forms.BooleanField(required=False, label='Steam')
+    habr = forms.BooleanField(required=False, label='Habr')
     # instagram = forms.BooleanField(required=False, label='Instagram')
     # twitter = forms.BooleanField(required=False, label='Twitter')
     # pinterest = forms.BooleanField(required=False, label='Pinterest')
@@ -81,91 +82,22 @@ class InitialDataPhoneNumberInfoForm(forms.Form):
         fields = ('phone',)
 
 
-class InitialDataGitHubSteamForm(forms.Form):
-    nickname = forms.CharField(max_length=100, label='Ник')
+class InitialDataGitHubForm(forms.Form):
+    github_nickname = forms.CharField(max_length=100, label='Ник в GitHub')
 
     class Meta:
-        fields = ('nickname',)
+        fields = ('github_nickname',)
 
 
-class VKDataSpecialistForm(ModelForm):
+class InitialDataSteamForm(forms.Form):
+    steam_nickname = forms.CharField(max_length=100, label='Ник в Steam')
+
     class Meta:
-        model = VKInfo
-        fields = {
-            'specialist',
-            'vk_id',
-            'domain',
-            'bdate',
-            'photo_200_orig',
-            'photo_400_orig',
-            'skype',
-            'interests',
-            'books',
-            'tv',
-            'quotes',
-            'about',
-            'games',
-            'movies',
-            'activities',
-            'music',
-            'site',
-            'university_name',
-            'faculty_name',
-            'graduation',
-            'education_form',
-            'education_status',
-            'home_town',
-            'relation',
-            'screen_name',
-            'first_name',
-            'last_name',
-            'is_closed',
-            'city',
-            'country',
-            'career',
-            'military',
-            'political',
-            'universities',
-            'schools',
-            'number_of_friends',
-            'visualization_of_friends_picture_name',
-        }
-        labels = {
-            'specialist': 'Специалист',
-            'vk_id': 'VK id',
-            'domain': 'Короткий адрес страницы VK',
-            'bdate': 'Дата рождения',
-            'photo_200_orig': 'URL фотографии, имеющей ширину 200 пикселей',
-            'photo_400_orig': 'URL фотографии, имеющей ширину 400 пикселей',
-            'skype': 'Данные для связи в skype',
-            'interests': 'Интересы',
-            'books': 'Любимые книги',
-            'tv': 'Любимые телешоу',
-            'quotes': 'Любимые цитаты',
-            'about': 'О себе',
-            'games': 'Любимые игры',
-            'movies': 'Любимые фильмы',
-            'activities': 'Деятельность',
-            'music': 'Любимая музыка',
-            'site': 'Адрес сайта',
-            'university_name': 'Наименование вуза',
-            'faculty_name': 'Наименование факультета в вузе',
-            'graduation': 'Год окончания обучения в вузе',
-            'education_form': 'Форма обучения в вузе',
-            'education_status': 'Статус в вузе',
-            'home_town': 'Родной город',
-            'relation': 'Семейное положение',
-            'screen_name': 'Короткое имя',
-            'first_name': 'Имя',
-            'last_name': 'Фамилия',
-            'is_closed': 'Закрыт ли аккаунт',
-            'city': 'Город проживания',
-            'country': 'Страна проживания',
-            'career': 'Место работы',
-            'military': 'Место военной службы',
-            'political': 'Политические предпочтения',
-            'universities': 'Список вузов',
-            'schools': 'Список школ',
-            'number_of_friends': 'Количество друзей',
-            'visualization_of_friends_picture_name': 'Визуализация друзей',
-        }
+        fields = ('steam_nickname',)
+
+
+class InitialDataHabrForm(forms.Form):
+    habr_nickname = forms.CharField(max_length=100, label='Ник в Habr')
+
+    class Meta:
+        fields = ('habr_nickname',)

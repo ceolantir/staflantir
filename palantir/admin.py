@@ -9,6 +9,8 @@ from .models import (
     GitHubReposInfo,
     SteamProfileInfo,
     SteamReposInfo,
+    HabrProfileInfo,
+    HabrReposInfo,
 )
 
 
@@ -97,3 +99,26 @@ class SteamReposInfoSpecialistAdmin(admin.ModelAdmin):
     )
     list_display_links = ('profile', 'name',)
     list_filter = ('profile', 'profile__specialist', 'profile__specialist__owner',)
+
+
+@admin.register(HabrProfileInfo)
+class HabrProfileInfoSpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'specialist',
+        'name'
+    )
+    list_display_links = ('specialist', 'name',)
+    list_filter = ('specialist', 'specialist__owner',)
+
+
+@admin.register(HabrReposInfo)
+class HabrReposInfoSpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'profile',
+        'url',
+    )
+    list_display_links = ('profile', 'url',)
+    list_filter = ('profile', 'profile__specialist', 'profile__specialist__owner',)
+    ordering = ('rating',)
