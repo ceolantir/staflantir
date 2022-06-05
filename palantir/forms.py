@@ -44,6 +44,7 @@ class InformationSourcesSelectionForm(forms.Form):
     vk = forms.BooleanField(required=False, label='VK')
     phone_number_information = forms.BooleanField(required=False, label='Phone number')
     github = forms.BooleanField(required=False, label='GitHub')
+    steam = forms.BooleanField(required=False, label='Steam')
     # instagram = forms.BooleanField(required=False, label='Instagram')
     # twitter = forms.BooleanField(required=False, label='Twitter')
     # pinterest = forms.BooleanField(required=False, label='Pinterest')
@@ -80,8 +81,8 @@ class InitialDataPhoneNumberInfoForm(forms.Form):
         fields = ('phone',)
 
 
-class InitialDataGitHubForm(forms.Form):
-    nickname = forms.CharField(max_length=100, label='Ник в GitHub')
+class InitialDataGitHubSteamForm(forms.Form):
+    nickname = forms.CharField(max_length=100, label='Ник')
 
     class Meta:
         fields = ('nickname',)
