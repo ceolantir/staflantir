@@ -7,6 +7,8 @@ from .models import (
     PhoneNumberInfo,
     GitHubProfileInfo,
     GitHubReposInfo,
+    SteamProfileInfo,
+    SteamReposInfo,
 )
 
 
@@ -66,6 +68,28 @@ class GitHubProfileInfoSpecialistAdmin(admin.ModelAdmin):
 
 @admin.register(GitHubReposInfo)
 class GitHubReposInfoSpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'profile',
+        'name',
+    )
+    list_display_links = ('profile', 'name',)
+    list_filter = ('profile', 'profile__specialist', 'profile__specialist__owner',)
+
+
+@admin.register(SteamProfileInfo)
+class SteamProfileInfoSpecialistAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'specialist',
+        'name'
+    )
+    list_display_links = ('specialist', 'name',)
+    list_filter = ('specialist', 'specialist__owner',)
+
+
+@admin.register(SteamReposInfo)
+class SteamReposInfoSpecialistAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'profile',
