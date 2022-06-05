@@ -7,6 +7,7 @@ error_tuple = (
     'UserDeletedOrBanned',
     'UnidentifiedError',
     'PhoneError',
+    'SteamError',
 )
 
 
