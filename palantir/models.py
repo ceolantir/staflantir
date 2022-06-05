@@ -133,8 +133,8 @@ class GitHubProfileInfo(models.Model):
     twitter_username = models.CharField(max_length=100, null=True, blank=True, verbose_name='Ник в твиттере')
 
     class Meta:
-        verbose_name = 'Данные профиля из GitHub'
-        verbose_name_plural = 'Данные профилей из GitHub'
+        verbose_name = 'Данные из GitHub'
+        verbose_name_plural = 'Данные из GitHub'
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -156,6 +156,35 @@ class GitHubReposInfo(models.Model):
     class Meta:
         verbose_name = 'Данные репозиториев профиля из GitHub'
         verbose_name_plural = 'Данные репозиториев профилей из GitHub'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+class SteamProfileInfo(models.Model):
+    specialist = models.ForeignKey(Specialist, on_delete=models.CASCADE, verbose_name='Специалист')
+    name = models.CharField(max_length=100, verbose_name='Ник')
+    created_at = models.CharField(max_length=50, null=True, blank=True, verbose_name='Создан')
+    lvl = models.CharField(max_length=5, null=True, blank=True, verbose_name='Уровень')
+    games_number = models.CharField(max_length=10, null=True, blank=True, verbose_name='Количество игр')
+    total_hours = models.CharField(max_length=10, null=True, blank=True, verbose_name='Количество часов всего')
+
+    class Meta:
+        verbose_name = 'Данные из Steam'
+        verbose_name_plural = 'Данные из Steam'
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+class SteamReposInfo(models.Model):
+    profile = models.ForeignKey(SteamProfileInfo, on_delete=models.CASCADE, verbose_name='Профиль в Steam')
+    name = models.CharField(max_length=100, verbose_name='Название игры')
+    hours_forever = models.CharField(max_length=6, null=True, blank=True, verbose_name='Количество часов')
+
+    class Meta:
+        verbose_name = 'Данные игр профиля из Steam'
+        verbose_name_plural = 'Данные игр профилей из Steam'
 
     def __getitem__(self, key):
         return getattr(self, key)
