@@ -1,4 +1,4 @@
-# Hi there, I'm [Tamir](https://vk.com/ceolantir) ![](https://github.com/blackcater/blackcater/raw/main/images/Hi.gif) 
+# Hi there, I'm [Tamir](https://vk.com/ceolantir)
 ### Computer science student, junior software from Russia 🇷🇺
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=ceolantir)](https://git.io/streak-stats)
 ____
