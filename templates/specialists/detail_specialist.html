@@ -1,0 +1,159 @@
+{% extends 'base/base.html' %}
+{% load my_tags %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <main class="container mt-3 pb-5">
+        <div class="row mt-5">
+            <div class="col-12 col-lg-2"></div>
+            <div class="col-12 col-lg-8">
+                <section class="px-3">
+                    <div class="text-center">
+                        <img src="{{ specialist.image.url }} "width="320" height="320" alt="">
+                    </div>
+                    <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;">
+                        <strong>
+                            {{ specialist.full_name }}
+                        </strong>
+                    </h1>
+                    <div class="card px-3">
+                        <div class="card-body pb-1">
+                            <h4>
+                                Описание специалиста
+                            </h4>
+                            {% if specialist.description %}
+                                <p>
+                                    {{ specialist.description|linebreaksbr }}
+                                </p>
+                            {% else %}
+                                <p>
+                                    <i>
+                                        Добавить описание можно при редактировании данных специалиста
+                                    </i>
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="card-body pt-1">
+                            <a href="{% url 'detail_specialist_edit' pk=specialist.pk %}">
+                                <button class="btn btn-block btn-primary">
+                                    Редактировать данные специалиста
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    {% if specialist_data_vk %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_data_vk|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_data_vk_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                                <p>
+                                    Визуализация друзей из VK:
+                                </p>
+                                <div class="text-center">
+                                    <img src="{{ specialist_data_vk.visualization_of_friends_default_picture_name.url }} "width="640" height="480" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if specialist_phone_number %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_phone_number|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_phone_number_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if specialist_github_profile_info %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_github_profile_info|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_github_profile_info_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                                {% for specialist_github_repo_info_fields in specialist_github_repos_info_fields %}
+                                    <p>
+                                        {% for key, value in specialist_github_repo_info_fields.items %}
+                                            {{ key }}: {{ value|linebreaksbr }} <br>
+                                        {% endfor %}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if specialist_steam_profile_info %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_steam_profile_info|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_steam_profile_info_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                                {% for specialist_steam_repo_info_fields in specialist_steam_repos_info_fields %}
+                                    <p>
+                                        {% for key, value in specialist_steam_repo_info_fields.items %}
+                                            {{ key }}: {{ value }} <br>
+                                        {% endfor %}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if specialist_habr_profile_info %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_habr_profile_info|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_habr_profile_info_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                                {% for specialist_habr_repo_info_fields in specialist_habr_repos_info_fields %}
+                                    <p>
+                                        {% for key, value in specialist_habr_repo_info_fields.items %}
+                                            {{ key }}: {{ value }} <br>
+                                        {% endfor %}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if specialist_stackoverflow_profile_info %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body">
+                                <h4>
+                                    {{ specialist_stackoverflow_profile_info|verbose_name }}
+                                </h4>
+                                <p>
+                                    {% for key, value in specialist_stackoverflow_profile_info_fields.items %}
+                                        {{ key }}: {{ value|linebreaksbr }} <br>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </main>
+{% endblock %}

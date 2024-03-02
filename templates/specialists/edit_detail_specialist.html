@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% load my_tags %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <main class="container mt-3 pb-5">
+        <div class="row mt-5">
+            <div class="col-12 col-lg-2"></div>
+            <div class="col-12 col-lg-8">
+                <section class="px-3">
+                    <div class="text-center">
+                        <img src="{{ specialist.image.url }} "width="320" height="320" alt="">
+                    </div>
+                    <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;">
+                        <strong>
+                            {{ specialist.full_name }}
+                        </strong>
+                    </h1>
+                    <form class="form-signin" enctype="multipart/form-data" method="POST">
+                        {% csrf_token %}
+                        <div class="card px-3 my-3">
+                            <div class="card-body pb-1">
+                                <p>
+                                    {{ specialist_description|crispy }}
+                                </p>
+                            </div>
+                            <div class="card-body pt-1">
+                                <button class="btn btn-block btn-primary" type="submit">
+                                    Сохранить изменения
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </main>
+{% endblock %}
